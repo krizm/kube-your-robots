@@ -43,14 +43,14 @@ The test report is shared via an emptydir volume, between the containers.
 `export MY_NAMESPACE=my-namespace-name`
 
 - Create your namespace
-`kubectl create ns ${MY_NAMESPACE}`
+`kubectl create ns %MY_NAMESPACE%`
 
 - Setting Docker registry credentials
 When the container image needs to be pulled from a private registry, the Kubernetes cluster needs access credentials. These are provided in a secret. The `regcred` secret can be created via this command:
-`kubectl create secret docker-registry regcred --docker-server=registry.humanitec.io --docker-username=k8swrkshp --docker-password=${REGISTRY_PASSWORD} --docker-email=nils@humanitec.com -n ${MY_NAMESPACE}`
+`kubectl create secret docker-registry regcred --docker-server=registry.humanitec.io --docker-username=k8swrkshp --docker-password=${REGISTRY_PASSWORD} --docker-email=nils@humanitec.com -n %MY_NAMESPACE%`
 
 - Setting service account permissions
-`kubectl apply -f k8s-sa.yml -n ${MY_NAMESPACE}`
+`kubectl apply -f k8s-sa.yml -n %MY_NAMESPACE%`
 
 - Adding the ClusterRoleBinding
   ```
@@ -65,25 +65,28 @@ When the container image needs to be pulled from a private registry, the Kuberne
     name: cluster-admin
   subjects:
   - kind: ServiceAccount
-    namespace: '${MY_NAMESPACE}'
+    namespace: '%MY_NAMESPACE%'
     name: tester
   EOF
   ```
 
 - Trigger the robot-test job
-`kubectl apply -f job.yml -n ${MY_NAMESPACE}`
+`kubectl apply -f job.yml -n %MY_NAMESPACE%`
 
 - Check the running pods triggered by the job
-`kubectl get pods -n ${MY_NAMESPACE}`
+`kubectl get pods -n %MY_NAMESPACE%`
 
 - Export the pod name into an environment variable
-`export POD=$(kubectl get pods -n $MY_NAMESPACE -o name)`
+  - on Windows ⚠️:
+    - retrieve name of the pod: `kubectl get pods -n %MY_NAMESPACE% -o name`
+    - copy the name to clipboard and then set it as variable, e.g.: `set POD=nginx-000000000000-00000`
+  - on Unix: `export POD=$(kubectl get pods -n $MY_NAMESPACE -o name)`
 
 - Check the container logs
-`kubectl logs ${POD} -c robot-run -n ${MY_NAMESPACE}`
+`kubectl logs %POD% -c robot-run -n %MY_NAMESPACE%`
 
 - Port forward to the nginx container to see the test report
-`kubectl port-forward ${POD} 8080:80 -n ${MY_NAMESPACE}`
+`kubectl port-forward %POD% 8080:80 -n %MY_NAMESPACE%`
 Navigate in your browser to http://localhost:8080/report.html
 
 
@@ -97,10 +100,10 @@ In this example, I'm using a DNS record, which is managed in an AWS route 53 acc
 
 ## Step by step execution
 - Create the service object pointing to port 80 of the nginx container
-`kubectl apply -f service.yml -n ${MY_NAMESPACE}`
+`kubectl apply -f service.yml -n %MY_NAMESPACE%`
 - Update the subdomain in [ingress.yml](ingress.yml) and [certificate-crd.yml](certificate-crd.yml). e.g. test-report.k8swrkshp.devopsplatforms.tv. Keep in mind that domain names need to be globally unique.
 - Create the certificate CRD, which will provide the tls certificate secret
-`kubectl apply -f certificate-crd.yml -n ${MY_NAMESPACE}`
+`kubectl apply -f certificate-crd.yml -n %MY_NAMESPACE%`
 - Create a htpasswd file
   ```
   htpasswd -c auth tester
@@ -110,7 +113,7 @@ In this example, I'm using a DNS record, which is managed in an AWS route 53 acc
   Adding password for user tester
   ```
 - Create the secret object for the basic authentication
-`kubectl create secret generic basic-auth --from-file=auth -n ${MY_NAMESPACE}`
+`kubectl create secret generic basic-auth --from-file=auth -n %MY_NAMESPACE%`
 - Create the ingress object
-`kubectl apply -f ingress.yml -n ${MY_NAMESPACE}`
+`kubectl apply -f ingress.yml -n %MY_NAMESPACE%`
 
