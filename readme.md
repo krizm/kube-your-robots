@@ -1,5 +1,5 @@
 ---
-ℹ️ This is a modified version of the repo with commands changed to support Windows CMD instead of Unix shells (mainly changing `export` to `set` and `%VAR` to `%VAR%`).
+ℹ️ This is a modified version of the repo with commands changed to support Windows CMD instead of Unix shells (mainly changing `export` to `set` and `$VAR` to `%VAR%`).
 
 ---
 
