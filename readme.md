@@ -1,3 +1,8 @@
+---
+ℹ️ This is a modified version of the repo with commands changed to support Windows CMD instead of Unix shells (mainly changing `export` to `set` and `%VAR` to `%VAR%`).
+
+---
+
 # Welcome to Containerize your robots and run them on Kubernetes
 ## A workshop part of [RoboCon 2024](https://robocon.io/). 
 Presented by [Markus Stahl](https://www.linkedin.com/in/markus-s-47385134/) and [Nils Balkow-Tychsen](https://www.linkedin.com/in/nilsty/)
